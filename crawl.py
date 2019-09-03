@@ -14,61 +14,88 @@ from Paths import paths as paths
 from Strings.help_file import help_message
 from Paths import file_picker
 from Paths.paths import CrawlPath
+from subprocess import call
+from pathlib import Path
 import getopt
 import sys
 
 crawlPath = CrawlPath()
 settings = crawlPath.read_settings()
+opts, args = "", ""
+
+
+def run_app_crawler():
+    sdk_dir = settings["sdk_dir"]
+    apk_dir = settings["apk_dir"]
+    crawler_dir = settings["crawler_dir"]
+    for key, path in settings.items():
+        check_path = Path(path)
+        if not check_path.absolute().exists():
+            print(key + " " + path +
+                  " mighth not exist. Run relevant command "
+                  "to set its directory and ensure it is an absolute path. "
+                  "i.e. does not start with \'~\'.\n" +
+                  help_message)
+            sys.exit(5)
+
+    call(["java", "-jar", crawler_dir, "--apk-file",
+         apk_dir, "--android-sdk", sdk_dir])
+
 
 try:
     opts, args = getopt.getopt(sys.argv[1:], "hascr")   # unpacking tuple
-    for opt, arg in opts:
-        if opt == "-h":
-            print(help_message)
 
-        elif opt == "-a":
-            continue
-            apk_dir = file_picker.get_path(file_picker.GET_APK)
-            # set a "last used path" that will be used if -a is not used
-            settings["apk_dir"] = apk_dir
-            crawlPath.save_settings(settings)
-
-        elif opt == "-s":
-            # TODO: get Android SDK path and store in an options file
-            sdk_dir = file_picker.get_path(file_picker.GET_SDK)
-            settings["sdk_dir"] = sdk_dir
-            crawlPath.save_settings(settings)
-
-        elif opt == "-c":
-            # TODO: get App-Crawler directory and store it
-            crawler_dir = file_picker.get_path(file_picker.GET_CRAWL)
-            settings["crawler_dir"] = crawler_dir
-            crawlPath.save_settings(settings)
-        elif opt == "-r":
-            if len(opts) > 1:
-                if opts[len(opts)-1][0] == "-r":
-                    # if r is the last argument
-                    print("RUN")
-                else:
-                    sys.exit("-r must come last.")
-        else:
-            print("invalid argument.")
-
-
-
-    if len(opts) == 0:
-        # check if APK has been saved before
-        if settings.get("apk_dir", "") is not "":
-            print("Using last used APK file path. Run this command "
-                  "with -a argument to choose new APK.")
-            # TODO: run crawler command in terminal
-            pass
-        else:
-            print("APK filepath not on record. Run this command with -a to "
-                  "select APK and save its filepath.")
 except getopt.GetoptError:
     print("Exception thrown whilslt parsing args")
-    sys.exit(2)
+    sys.exit(1)
+
+for opt, arg in opts:
+    if opt == "-h":
+        print(help_message)
+
+    elif opt == "-a":
+        apk_dir = file_picker.get_path(file_picker.GET_APK)
+        # Set a "last used path" that will be used if -a is not used and save
+        settings["apk_dir"] = apk_dir
+        crawlPath.save_settings(settings)
+
+    elif opt == "-s":
+        # Get Android SDK path and store in an options file
+        sdk_dir = file_picker.get_path(file_picker.GET_SDK)
+        settings["sdk_dir"] = sdk_dir
+        crawlPath.save_settings(settings)
+
+    elif opt == "-c":
+        # Get App-Crawler directory and store it
+        crawler_dir = file_picker.get_path(file_picker.GET_CRAWL)
+        settings["crawler_dir"] = crawler_dir
+        crawlPath.save_settings(settings)
+
+    elif opt == "-r":
+        if len(opts) > 1:
+            if opts[len(opts)-1][0] == "-r":
+                # if r is the last argument
+                run_app_crawler()
+            else:
+                sys.exit("-r must come last.")
+        else:
+            # if -r was input alone, do nothing
+            pass
+    else:
+        print("invalid argument.")
+        print(help_message)
+        sys.exit(3)
+
+# check if APK has been saved before
+if settings.get("apk_dir", "") is not "":
+    print("Using last used APK file path. Run this command "
+          "with -a argument to choose new APK.")
+    run_app_crawler()
+else:
+    print("APK filepath not on record. Run this command with -a to "
+          "select APK and save its filepath.")
+    sys.exit(4)
+
 
 """
 this = f"{cmd.JAVA} {paths.CRAWLER_DIR} {cmd.APK_FILE} (your .apk file dir)" \

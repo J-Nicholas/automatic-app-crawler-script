@@ -18,18 +18,22 @@ def get_path(target: int) -> str:
     title = ""
     filename = ""
     directory = ""
+    apk_filetype = [("APK files", '*.apk')]
+    jar_filetype = [("JAR files", "*.jar")]
     Tk().withdraw()  # stops extra GUI from appearing.
 
     if target == GET_APK:
         title = "Select APK file"
         filename = askopenfilename(title=title,
-                                   filetypes=[("APK files", '*.apk')])
+                                   filetypes=apk_filetype)
     elif target == GET_SDK:
         title = "Select SDK directory"
         directory = askdirectory(title=title)
+
     elif target == GET_CRAWL:
-        title = "Select app-crawler directory"
-        directory = askdirectory(title=title)
+        title = "Select app-crawler JAR"
+        filename = askopenfilename(title=title,
+                                   filetypes=jar_filetype)
     else:
         print("Invalid option passed to get_path function. "
               "Target must be of type int.")
