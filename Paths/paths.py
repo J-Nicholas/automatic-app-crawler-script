@@ -7,9 +7,10 @@ from pathlib import Path
 class CrawlPath:
     """Responsible for saving and loading json files and checking paths."""
 
-    __DEFAULT_SDK_DIR = "~/Android/Sdk/"
-    __DEFAULT_CRAWLER_DIR = "~/Documents/Projects/Android/Testing/"\
-                            "app-crawler/crawl_launcher.jar"
+    __DEFAULT_SDK_DIR = Path.home() / "Android/Sdk/"
+    __DEFAULT_CRAWLER_DIR = Path.home() / "Documents/Projects/Android/" \
+        "Testing/app-crawler/crawl_launcher.jar"
+
     __default_settings = dict(sdk_dir=__DEFAULT_SDK_DIR,
                               crawler_dir=__DEFAULT_CRAWLER_DIR)
 

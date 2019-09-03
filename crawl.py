@@ -23,6 +23,12 @@ crawlPath = CrawlPath()
 settings = crawlPath.read_settings()
 opts, args = "", ""
 
+# TODO Method to force user to pick relevant file paths before executing.
+
+# TODO Prompt to ask user if their android emulator is running
+
+# TODO catch correct exception if emulator was not active.
+
 
 def run_app_crawler():
     sdk_dir = settings["sdk_dir"]
