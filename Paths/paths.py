@@ -3,14 +3,14 @@
 import json
 from pathlib import Path
 
-__DEFAULT_SDK_DIR = "~/Android/Sdk/"
-__DEFAULT_CRAWLER_DIR = "~/Documents/Projects/Android/Testing/app-crawler/"
-__default_settings = dict(sdk_dir=__DEFAULT_SDK_DIR,
-                          crawler_dir=__DEFAULT_CRAWLER_DIR)
-
 
 class CrawlPath:
     """Responsible for saving and loading json files and checking paths."""
+
+    __DEFAULT_SDK_DIR = "~/Android/Sdk/"
+    __DEFAULT_CRAWLER_DIR = "~/Documents/Projects/Android/Testing/app-crawler/"
+    __default_settings = dict(sdk_dir=__DEFAULT_SDK_DIR,
+                              crawler_dir=__DEFAULT_CRAWLER_DIR)
 
     def __init__(self):
         """Initialise the settings path."""
@@ -60,7 +60,7 @@ class CrawlPath:
 
     def make_settings_file(self) -> None:
         """Initalise settings file with default directories."""
-        json_file = json.dumps(__default_settings)
+        json_file = json.dumps(self.__default_settings)
         self.full_path.write_text(json_file)
 
     def read_settings(self):

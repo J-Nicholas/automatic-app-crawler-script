@@ -19,27 +19,53 @@ import sys
 
 crawlPath = CrawlPath()
 settings = crawlPath.read_settings()
-print(settings)
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "hasc")   # unpacking tuple
+    opts, args = getopt.getopt(sys.argv[1:], "hascr")   # unpacking tuple
     for opt, arg in opts:
         if opt == "-h":
             print(help_message)
+
         elif opt == "-a":
-            apk_dir = file_picker.get_apk_path()
+            continue
+            apk_dir = file_picker.get_path(file_picker.GET_APK)
             # set a "last used path" that will be used if -a is not used
             settings["apk_dir"] = apk_dir
             crawlPath.save_settings(settings)
-            # print("You chose:", apk_dir)
+
         elif opt == "-s":
-            # get Android SDK path and store in an options file
-            pass
+            # TODO: get Android SDK path and store in an options file
+            sdk_dir = file_picker.get_path(file_picker.GET_SDK)
+            settings["sdk_dir"] = sdk_dir
+            crawlPath.save_settings(settings)
+
         elif opt == "-c":
-            # get App-Crawler directory and store it
-            pass
+            # TODO: get App-Crawler directory and store it
+            crawler_dir = file_picker.get_path(file_picker.GET_CRAWL)
+            settings["crawler_dir"] = crawler_dir
+            crawlPath.save_settings(settings)
+        elif opt == "-r":
+            if len(opts) > 1:
+                if opts[len(opts)-1][0] == "-r":
+                    # if r is the last argument
+                    print("RUN")
+                else:
+                    sys.exit("-r must come last.")
         else:
             print("invalid argument.")
+
+
+
+    if len(opts) == 0:
+        # check if APK has been saved before
+        if settings.get("apk_dir", "") is not "":
+            print("Using last used APK file path. Run this command "
+                  "with -a argument to choose new APK.")
+            # TODO: run crawler command in terminal
+            pass
+        else:
+            print("APK filepath not on record. Run this command with -a to "
+                  "select APK and save its filepath.")
 except getopt.GetoptError:
     print("Exception thrown whilslt parsing args")
     sys.exit(2)
