@@ -9,7 +9,6 @@ file.
 
 # Had to run "chmod u+x app.py" command inside root folder to be able to run as
 # global script
-from Commands import cmd as cmd
 from Paths import paths as paths
 from Strings.help_file import help_message
 from Paths import file_picker
@@ -20,10 +19,8 @@ import getopt
 import sys
 
 crawlPath = CrawlPath()
-settings = crawlPath.read_settings()
+settings = crawlPath.read_settings()    # dictionary
 opts, args = "", ""
-
-# TODO Method to force user to pick relevant file paths before executing.
 
 # TODO Prompt to ask user if their android emulator is running
 
@@ -31,6 +28,7 @@ opts, args = "", ""
 
 
 def run_app_crawler():
+    """Run the terminal command to start app-crawler."""
     sdk_dir = settings["sdk_dir"]
     apk_dir = settings["apk_dir"]
     crawler_dir = settings["crawler_dir"]
@@ -101,9 +99,3 @@ else:
     print("APK filepath not on record. Run this command with -a to "
           "select APK and save its filepath.")
     sys.exit(4)
-
-
-"""
-this = f"{cmd.JAVA} {paths.CRAWLER_DIR} {cmd.APK_FILE} (your .apk file dir)" \
-    f"{cmd.ANDROID_SDK} {paths.SDK_DIR}"
-"""

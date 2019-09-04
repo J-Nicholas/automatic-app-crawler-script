@@ -2,17 +2,13 @@
 
 import json
 from pathlib import Path
+from Paths import file_picker
+from Paths.file_picker import get_path
+from sys import exit
 
 
 class CrawlPath:
     """Responsible for saving and loading json files and checking paths."""
-
-    __DEFAULT_SDK_DIR = Path.home() / "Android/Sdk/"
-    __DEFAULT_CRAWLER_DIR = Path.home() / "Documents/Projects/Android/" \
-        "Testing/app-crawler/crawl_launcher.jar"
-
-    __default_settings = dict(sdk_dir=__DEFAULT_SDK_DIR,
-                              crawler_dir=__DEFAULT_CRAWLER_DIR)
 
     def __init__(self):
         """Initialise the settings path."""
@@ -21,10 +17,12 @@ class CrawlPath:
         self.__full_path = self.folder_path / self.settings_filename
         if not self.user_dir_exists():
             # make dir and settings file with default values
-            print("Settings folder not found. Creating settings folder...")
+            print("Settings folder not found. Creating settings folder in...\n"
+                  + self.__folder_path)
             self.make_dir()
         if not self.settings_exist():
-            print("Settings file not found. Creating settings file...")
+            self.initial_setup()
+            print("Creating settings file...")
             self.make_settings_file()
 
     @property
@@ -81,3 +79,37 @@ class CrawlPath:
         """Save directory settings to file as JSON object."""
         json_object = json.dumps(json_settings)
         self.full_path.write_text(json_object)
+
+    def initial_setup(self):
+        """Ask user to locate filepaths required for application to run.
+
+        Ask user to locate Android SDK path, app-crawler.jar, and the .apk file
+        that they want the app-crawler to test.
+        """
+        print("Performing first time setup. Please locate the Android SDK "
+              "folder, the APK file you wish to test using the app-crawler, "
+              "and the App-crawler.jar file.")
+
+        response = input("Are you ready? (y/n)").lower()
+        if response == "y" or response == "yes":
+            android_sdk = Path(get_path(file_picker.GET_SDK))
+            print("Android SDK path selected:", android_sdk.absolute())
+
+            android_apk = Path(get_path(file_picker.GET_APK))
+            print("Android APK path selected:", android_apk.absolute())
+
+            app_crawler = Path(get_path(file_picker.GET_CRAWL))
+            print("App crawler path selected:", app_crawler.absolute())
+
+            if not (android_apk.exists() or android_sdk.exists() or
+                    app_crawler.exists()):
+                print("Error whilst picking directories.")
+                exit(4)
+            self.__default_settings = dict(
+                sdk_dir=android_sdk.resolve().as_posix(),
+                apk_dir=android_apk.resolve().as_posix(),
+                crawler_dir=app_crawler.resolve().as_posix())
+        else:
+            print("Exiting...")
+            exit(0)
+            pass
