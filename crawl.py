@@ -22,9 +22,10 @@ crawlPath = CrawlPath()
 settings = crawlPath.read_settings()    # dictionary
 opts, args = "", ""
 
-# TODO Prompt to ask user if their android emulator is running
-
-# TODO catch correct exception if emulator was not active.
+response = input("Please ensure that your Android emulator is currently "
+                 "running.\nContinue? (y/n)").lower()
+if response != "y" and response != "yes":
+    sys.exit("Exiting...")
 
 
 def run_app_crawler():
@@ -36,14 +37,17 @@ def run_app_crawler():
         check_path = Path(path)
         if not check_path.absolute().exists():
             print(key + " " + path +
-                  " mighth not exist. Run relevant command "
+                  " might not exist. Run relevant command "
                   "to set its directory and ensure it is an absolute path. "
                   "i.e. does not start with \'~\'.\n" +
                   help_message)
             sys.exit(5)
-
-    call(["java", "-jar", crawler_dir, "--apk-file",
-         apk_dir, "--android-sdk", sdk_dir])
+    try:
+        call(["java", "-jar", crawler_dir, "--apk-file",
+                      apk_dir, "--android-sdk", sdk_dir])
+    except Exception as e:
+        print("Error while running app-crawler call() command.")
+        raise e.message
 
 
 try:

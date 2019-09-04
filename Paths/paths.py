@@ -5,6 +5,7 @@ from pathlib import Path
 from Paths import file_picker
 from Paths.file_picker import get_path
 from sys import exit
+from Strings.help_file import help_message
 
 
 class CrawlPath:
@@ -18,12 +19,14 @@ class CrawlPath:
         if not self.user_dir_exists():
             # make dir and settings file with default values
             print("Settings folder not found. Creating settings folder in...\n"
-                  + self.__folder_path)
+                  + self.__folder_path.as_posix())
             self.make_dir()
         if not self.settings_exist():
             self.initial_setup()
             print("Creating settings file...")
             self.make_settings_file()
+            print(help_message)
+            exit("Setup complete. Run the script again to proceed.")
 
     @property
     def folder_path(self) -> str:
